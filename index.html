@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<meta charset="UTF-8">
+<head>
+    <title>Карскас страницы с погодой</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        var settings = {
+                "url": "https://api.openweathermap.org/data/2.5/weather?q=Moscow&units=metric&appid=62b3c19aabe5b3a5bc79afa14f988e4f",
+                "method": "GET",
+                "timeout": 0,
+            };
+            $.ajax(settings).done(function(response, xhr) {
+                console.log(response);
+                var content = response;
+                $("#temp").append(response.main.temp);
+                $("#min_temp").append(response.main.temp_min);
+                $("#max_temp").append(response.main.temp_max);
+                $("#pressure").append(response.main.pressure);
+                let wind_direction;
+                if (response.wind.deg >= 0 && response.wind.deg < 22.5) {
+                    wind_direction = "северный";
+                } else if (response.wind.deg >= 22.5 && response.wind.deg < 67.5) {
+                    wind_direction = "северо-восточный";
+                } else if (response.wind.deg >= 67.5 && response.wind.deg < 112.5) {
+                    wind_direction = "восточный";
+                } else if (response.wind.deg >= 112.5 && response.wind.deg < 157.5) {
+                    wind_direction = "юго-восточный";
+                } else if (response.wind.deg >= 157.5 && response.wind.deg < 202.5) {
+                    wind_direction = "южный";
+                } else if (response.wind.deg >= 202.5 && response.wind.deg < 247.5) {
+                    wind_direction = "юго-западный";
+                } else if (response.wind.deg >= 247.5 && response.wind.deg < 292.5) {
+                    wind_direction = "западный";
+                } else if (response.wind.deg >= 292.5 && response.wind.deg < 337.5) {
+                    wind_direction = "северо-западный";
+                } else {
+                    wind_direction = "северный"; // Если угол ветра находится в диапазоне от 337.5 до 360 градусов
+                }
+                $("#wind_info").append("Ветер "+wind_direction+" скоростью "+response.wind.speed+" м/c с порывами до " +
+                    response.wind.gust + " м/с");
+            });
+    </script>
+</head>
+<body>
+    <h1>Страница с погодой</h1>
+    Температура: <span id="temp"></span>
+    <p>Максимальная температура: <span id="min_temp"></span>
+    <p>Минимальная температура: <span id="max_temp"></span>
+    <p>Давление: <span id="pressure"></span>
+    <p>Информация о ветре: <span id="wind_info"></span>
+</body>
+</html>
