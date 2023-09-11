@@ -1,78 +1,43 @@
 import os
-import random
 
 import django
-import library
 from faker import Faker
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "library.settings")
 django.setup()
 
-from apitest.models import Author, Library, Book
-from django.core.exceptions import ObjectDoesNotExist
-
+from apitest.models import Contact, PhoneNumber
 
 fake = Faker()
 
 
 # Создаем авторов
-def create_authors(num_authors):
-    authors = []
-    for _ in range(num_authors):
-        author = Author.objects.create(name=fake.name())
-        authors.append(author)
-    return authors
+def generate_contacts_and_numbers(num_contacts):
+    for _ in range(num_contacts):
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+        email = fake.email()
 
-
-# Создаем библиотеки
-def create_libraries(num_libraries):
-    libraries = []
-    for _ in range(num_libraries):
-        library = Library.objects.create(
-            name=fake.company(),
-            location=fake.city()
+        # Создание контакта
+        contact = Contact.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            email=email
         )
-        libraries.append(library)
-    return libraries
 
+        # Создание случайных телефонных номеров для контакта
+        for _ in range(2):  # Генерируем 2 номера для каждого контакта
+            phone_number = fake.phone_number()
+            phone_type = fake.random_element(elements=('mobile', 'home', 'work', 'other'))
 
-# Создаем книги
-def create_books(num_books, authors, libraries):
-    books = []
-    for _ in range(num_books):
-        author = random.choice(authors)
-        library = random.choice(libraries)
-        isbn = fake.unique.random_int(min=1000000000000, max=9999999999999)
-        publish_date = fake.date_between(start_date='-50y', end_date='today')
-        description = fake.paragraph()
-
-        try:
-            book = Book.objects.get(isbn=isbn)
-        except ObjectDoesNotExist:
-            book = Book(
-                title=fake.catch_phrase(),
-                isbn=isbn,
-                library=library,
-                author=author,
-                publish_date=publish_date,
-                description=description
+            PhoneNumber.objects.create(
+                contact=contact,
+                phone_number=phone_number,
+                phone_type=phone_type
             )
-            book.save()
-        books.append(book)
-    return books
 
 
-if __name__ == '__main__':
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", library.settings)
-    django.setup()
-    num_authors = 10  # Количество авторов
-    num_libraries = 5  # Количество библиотек
-    num_books = 50  # Количество книг
-
-    authors = create_authors(num_authors)
-    libraries = create_libraries(num_libraries)
-    books = create_books(num_books, authors, libraries)
-
-    print(f"Создано {len(authors)} авторов.")
-    print(f"Создано {len(libraries)} библиотек.")
-    print(f"Создано {len(books)} книг.")
+if __name__ == "__main__":
+    num_contacts_to_generate = 10  # Измените на количество контактов, которое вы хотите создать
+    generate_contacts_and_numbers(num_contacts_to_generate)
+    print(f"Создано {num_contacts_to_generate} контактов и их телефонных номеров.")

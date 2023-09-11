@@ -2,20 +2,13 @@ from rest_framework import serializers
 from .models import *
 
 
-class BookSerializer(serializers.ModelSerializer):
+class ContactSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Book
-        fields = '__all__'
-        read_only_fields = ['isbn']
-
-
-class AuthorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Author
+        model = Contact
         fields = '__all__'
 
 
-class LibrarySerializer(serializers.ModelSerializer):
+class PhoneNumberSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Library
+        model = PhoneNumber
         fields = '__all__'
