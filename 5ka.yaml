@@ -1,0 +1,137 @@
+openapi: 3.0.0
+info:
+  title: API для управления складом магазина "Пятерочка"
+  version: 1.0.0
+  description: API для выполнения операций CRUD на складе магазина "Пятерочка"
+servers:
+  - url: http://127.0.0.1:4010/
+paths:
+  /products:
+    get:
+      summary: Получить список всех продуктов на складе
+      responses:
+        '200':
+          description: Успешный запрос. Возвращает список продуктов.
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: "Молоко"
+                  category: "Молочные продукты"
+                  quantity: 100
+                - id: 2
+                  name: "Хлеб"
+                  category: "Хлебобулочные изделия"
+                  quantity: 50
+    post:
+      summary: Добавить новый продукт на склад
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Название продукта
+                category:
+                  type: string
+                  description: Категория продукта
+                quantity:
+                  type: integer
+                  description: Количество продукта на складе
+              required:
+                - name
+                - category
+                - quantity
+      responses:
+        '201':
+          description: Продукт успешно добавлен на склад. Возвращает созданный продукт.
+          content:
+            application/json:
+              example:
+                id: 3
+                name: "Яблоки"
+                category: "Фрукты"
+                quantity: 200
+
+  /products/{id}:
+    get:
+      summary: Получить информацию о продукте по его идентификатору
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор продукта
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос. Возвращает информацию о продукте.
+          content:
+            application/json:
+              example:
+                id: 1
+                name: "Молоко"
+                category: "Молочные продукты"
+                quantity: 100
+        '404':
+          description: Продукт с указанным идентификатором не найден.
+
+    put:
+      summary: Обновить информацию о продукте по его идентификатору
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор продукта
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Название продукта
+                category:
+                  type: string
+                  description: Категория продукта
+                quantity:
+                  type: integer
+                  description: Количество продукта на складе
+              required:
+                - name
+                - category
+                - quantity
+      responses:
+        '200':
+          description: Информация о продукте успешно обновлена. Возвращает обновленную информацию.
+          content:
+            application/json:
+              example:
+                id: 1
+                name: "Молоко (обновлено)"
+                category: "Молочные продукты"
+                quantity: 150
+        '404':
+          description: Продукт с указанным идентификатором не найден.
+
+    delete:
+      summary: Удалить продукт по его идентификатору
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор продукта
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Продукт успешно удален.
+        '404':
+          description: Продукт с указанным идентификатором не найден.
