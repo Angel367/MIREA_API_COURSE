@@ -1,4 +1,4 @@
-const PROTO_PATH = "./phonebook.proto";
+const PROTO_PATH = "./cart.proto"
 
 
 const grpc = require("grpc");
@@ -11,7 +11,9 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     arrays: true
 });
 
-const SubscriberService = grpc.loadPackageDefinition(packageDefinition).SubscriberService;
+const phonebookProto = grpc.loadPackageDefinition(packageDefinition);
+
+const SubscriberService = phonebookProto.phonebook.CartService;
 const client = new SubscriberService(
     "localhost:50051",
     grpc.credentials.createInsecure()

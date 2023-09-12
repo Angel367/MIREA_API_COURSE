@@ -1,0 +1,165 @@
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Список покупок</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn"
+crossorigin="anonymous">
+<style>
+.phbook {
+color: white;
+border-radius: 30px;
+padding-top: 3px;
+padding-bottom: 3px;
+padding-left: 3px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="py-5 text-left">
+<h2>Список покупок</h2>
+</div>
+<table class="table" id="subscribers_table">
+<thead>
+<tr>
+<th>Наименование</th>
+<th>Количество</th>
+<th>Куплено</th>
+<th>Действия</th>
+</tr>
+</thead>
+<tbody>
+{{#each results}}
+<tr>
+<td>{{ name }}</td>
+<td>{{ amount }}</td>
+<td>{{#if isBought}}Да{{else}}Нет{{/if}}</td>
+<td>
+<a href="javascript:void(0);" class="btn btn-sm btn-secondary phbook edit
+phbook" data-name="{{ name }}" data-amount="{{ amount }}" data-isBought="{{ isBought }}">Изменить</a>
+<a href="javascript:void(0);" class="btn btn-sm phbook btn-danger remove" data-name="{{ name }}">Удалить</a>
+</td>
+</tr>
+{{else}}
+<tr>
+<td colspan="4" class="text-center">Нет данных для отображения на форме</td>
+</tr>
+{{/each}}
+</tbody>
+</table>
+
+<!-- Добавить новый объект в список покупок -->
+<button class="btn btn-success float-right" data-toggle="modal" data-target="#newCartObjectModal">Добавить новый объект</button>
+
+</div>
+
+<!-- Модальное окно для добавления нового объекта -->
+<form action="/save" method="post">
+<div class="modal fade" id="newCartObjectModal" role="dialog">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title">Добавление нового объекта</h4>
+<button type="button" class="close" data-dismiss="modal">
+<span>&times;</span>
+</button>
+</div>
+<div class="modal-body">
+<div class="form-group">
+<input type="text" name="name" class="form-control" placeholder="Наименование" required="required">
+</div>
+<div class="form-group">
+<input type="text" name="amount" class="form-control" placeholder="Количество" required="required">
+</div>
+<div class="form-group">
+<label>Куплено:</label>
+<input type="checkbox" name="isBought" class="form-control">
+</div>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+<button type="submit" class="btn btn-success phbook">Создать</button>
+</div>
+</div>
+</div>
+</div>
+</form>
+
+<!-- Модальное окно для редактирования объекта -->
+<form action="/update" method="post">
+<div class="modal fade" id="editCartObjectModal" role="dialog">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title">Изменить объект</h4>
+<button type="button" class="close" data-dismiss="modal">
+<span>&times;</span>
+</button>
+</div>
+<div class="modal-body">
+<div class="form-group">
+<input type="text" name="name" class="form-control name" placeholder="Наименование" required="required">
+</div>
+<div class="form-group">
+<input type="text" name="amount" class="form-control amount" placeholder="Количество" required="required">
+</div>
+<div class="form-group">
+<label>Куплено:</label>
+<input type="checkbox" name="isBought" class="form-control isBought">
+</div>
+</div>
+<div class="modal-footer">
+<input type="hidden" name="name" class="cartObject_name">
+<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+<button type="submit" class="btn btn-success phbook">Обновить</button>
+</div>
+</div>
+</div>
+</div>
+</form>
+
+<!-- Модальное окно для удаления объекта -->
+<form id="remove-row-form" action="/remove" method="post">
+<div class="modal fade" id="removeCartObjectModal" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title"></h4>Удалить объект</h4>
+<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+</div>
+<div class="modal-body">
+Вы действительно хотите удалить данный объект?
+</div>
+<div class="modal-footer">
+<input type="hidden" name="name" class="form-control cartObject_name_removal" required="required">
+<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+<button type="submit" class="btn btn-danger phbook">Удалить</button>
+</div>
+</div>
+</div>
+</div>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+crossorigin="anonymous"></script>
+<script>
+$(document).ready(function () {
+$('#subscribers_table').on('click', '.edit', function () {
+$('#editCartObjectModal').modal('show');
+$('.cartObject_name').val($(this).data('name'));
+$('.amount').val($(this).data('amount'));
+$('.isBought').prop('checked', $(this).data('isBought'));
+}).on('click', '.remove', function () {
+$('#removeCartObjectModal').modal('show');
+$('.cartObject_name_removal').val($(this).data('name'));
+});
+});
+</script>
+</body>
+</html>
+

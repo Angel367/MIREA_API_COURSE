@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package phonebook;
+
+import "google/protobuf/empty.proto";
+
+message CartObject {
+  string name = 1;
+  int32 amount = 2;
+  bool isBought = 3;
+}
+
+service CartService {
+  rpc getAll(Empty) returns (CartList);
+  rpc get(CartRequest) returns (CartObject);
+  rpc insert(CartObject) returns (CartObject);
+  rpc update(CartObject) returns (CartObject);
+  rpc remove(CartRequest) returns (google.protobuf.Empty);
+}
+
+message Empty {}
+
+message CartRequest {
+  string name = 1;
+}
+
+message CartList {
+  repeated CartObject cartObjects = 1;
+}
