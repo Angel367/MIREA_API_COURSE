@@ -9,19 +9,19 @@ const {
     GraphQLList
 } = graphql;
 const cars = [
-    { id: 1, title: 'W211 2002', price: 450000, age: 21, brand: 'mercedes' },
-    { id: 2, title: 'M5', price: 22500000, age: 3, brand: 'bmw' },
-    { id: 3, title: 'quadro', price: 4500000, age: 8 }
+    {id: 1, title: 'W211 2002', price: 450000, age: 21, brand: 'mercedes'},
+    {id: 2, title: 'M5', price: 22500000, age: 3, brand: 'bmw'},
+    {id: 3, title: 'quadro', price: 4500000, age: 8}
 ];
 
 const CarType = new GraphQLObjectType({
     name: 'CarType',
     fields: () => ({
-        id: { type: new GraphQLNonNull(GraphQLID) },
-        title: { type: new GraphQLNonNull(GraphQLString) },
-        price: { type: new GraphQLNonNull(GraphQLInt) },
-        age: { type: new GraphQLNonNull(GraphQLInt) },
-        brand: { type: GraphQLString }
+        id: {type: new GraphQLNonNull(GraphQLID)},
+        title: {type: new GraphQLNonNull(GraphQLString)},
+        price: {type: new GraphQLNonNull(GraphQLInt)},
+        age: {type: new GraphQLNonNull(GraphQLInt)},
+        brand: {type: GraphQLString}
     })
 })
 
@@ -35,7 +35,7 @@ const RootQueryType = new GraphQLObjectType({
         car: {
             type: CarType,
             args: {
-                id: { type: GraphQLID }
+                id: {type: GraphQLID}
             },
             resolve: (parent, args) => cars.find(car => car.id === args.id)
         },
@@ -51,17 +51,55 @@ const Mutations = new GraphQLObjectType({
         addCar: {
             type: CarType,
             args: {
-                id: { type: new GraphQLNonNull(GraphQLID) },
-                title: { type: new GraphQLNonNull(GraphQLString) },
-                price: { type: new GraphQLNonNull(GraphQLInt) },
-                age: { type: new GraphQLNonNull(GraphQLInt) },
-                brand: { type: GraphQLString }
+                id: {type: new GraphQLNonNull(GraphQLID)},
+                title: {type: new GraphQLNonNull(GraphQLString)},
+                price: {type: new GraphQLNonNull(GraphQLInt)},
+                age: {type: new GraphQLNonNull(GraphQLInt)},
+                brand: {type: GraphQLString}
             },
             resolve: (parent, args) => {
                 const arrLength = cars.push(args)
                 return cars[arrLength - 1]
             }
+        },
+        editCar: {
+            type: CarType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)},
+                title: {type: GraphQLString},
+                price: {type: GraphQLInt},
+                age: {type: GraphQLInt},
+                brand: {type: GraphQLString}
+            },
+            resolve: (parent, args) => {
+                const carIndex = cars.findIndex(car => car.id === args.id);
+
+                if (carIndex === -1) {
+                    throw new Error(`Car with ID ${args.id} not found`);
+                }
+
+                const updatedCar = {...cars[carIndex], ...args};
+                cars[carIndex] = updatedCar;
+                return updatedCar;
+            }
+        },
+        deleteCar: {
+            type: CarType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve: (parent, args) => {
+                const carIndex = cars.findIndex(car => car.id === args.id);
+
+                if (carIndex === -1) {
+                    throw new Error(`Car with ID ${args.id} not found`);
+                }
+
+                const deletedCar = cars.splice(carIndex, 1)[0];
+                return deletedCar;
+            }
         }
+
     })
 })
 module.exports = new GraphQLSchema({
